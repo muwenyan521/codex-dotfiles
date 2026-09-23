@@ -1,0 +1,65 @@
+model_instructions_file = "prompts/codex-global.md"
+
+[features]
+plugins = true
+hooks = true
+
+[marketplaces.sisyphuslabs]
+source_type = "git"
+source = "https://github.com/lazycodex-ai/lazycodex.git"
+
+[plugins."omo@sisyphuslabs"]
+enabled = true
+
+[tui]
+theme = "catppuccin-macchiato"
+animations = true
+show_tooltips = true
+notifications = true
+notification_condition = "unfocused"
+notification_method = "auto"
+alternate_screen = "auto"
+raw_output_mode = false
+resume_cwd = "session"
+status_line_use_colors = true
+status_line = ["status", "task-progress", "git-branch", "model-with-reasoning", "context-remaining"]
+terminal_title = ["activity", "project-name", "git-branch", "task-progress"]
+
+[agents.explorer]
+config_file = "./agents/explorer.toml"
+
+[agents.lazycodex-clone-fidelity-reviewer]
+config_file = "./agents/lazycodex-clone-fidelity-reviewer.toml"
+
+[agents.lazycodex-code-reviewer]
+config_file = "./agents/lazycodex-code-reviewer.toml"
+
+[agents.lazycodex-executor]
+config_file = "./agents/lazycodex-executor.toml"
+
+[agents.lazycodex-gate-reviewer]
+config_file = "./agents/lazycodex-gate-reviewer.toml"
+
+[agents.lazycodex-qa-executor]
+config_file = "./agents/lazycodex-qa-executor.toml"
+
+[agents.lazycodex-worker-high]
+config_file = "./agents/lazycodex-worker-high.toml"
+
+[agents.lazycodex-worker-low]
+config_file = "./agents/lazycodex-worker-low.toml"
+
+[agents.lazycodex-worker-medium]
+config_file = "./agents/lazycodex-worker-medium.toml"
+
+[agents.librarian]
+config_file = "./agents/librarian.toml"
+
+[agents.metis]
+config_file = "./agents/metis.toml"
+
+[agents.momus]
+config_file = "./agents/momus.toml"
+
+[agents.plan]
+config_file = "./agents/plan.toml"

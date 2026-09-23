@@ -1,0 +1,4 @@
+interface:
+  display_name: "MCSM 远程运维"
+  short_description: "低停机维护 MCSManager 与 Minecraft 插件服务器"
+  default_prompt: "使用 $mcsm-remote-ops 连接并以单次维护窗口完成服务器变更与验证。"
