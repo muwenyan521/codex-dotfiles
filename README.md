@@ -1,52 +1,50 @@
-# Codex Dotfiles
+# Codex 个人配置
 
-Portable Codex settings, prompt, agents, and personal skills for Codex CLI/TUI and Codex in the ChatGPT desktop app. Both local clients use the user-level Codex configuration (`~/.codex/config.toml` by default); the documented user skill directory `$HOME/.agents/skills` is shared by ChatGPT and Codex.
+为 Codex TUI 和 ChatGPT 桌面版中的 Codex 整理的个人配置、全局提示词、智能体与技能。两者使用同一份用户级 Codex 配置（默认位于 `~/.codex/config.toml`）；用户级技能安装到 `$HOME/.agents/skills`，供 ChatGPT 和 Codex 共用。
 
-The `[tui]` section below only controls TUI presentation. Desktop-specific window and panel preferences remain owned by the desktop app; the shared model, prompt, plugin, agent, and skill setup applies to both local Codex surfaces.
+`[tui]` 中的选项只影响终端界面。桌面版窗口、面板等偏好仍由桌面应用管理；模型、全局提示词、插件、agents 和 skills 使用共享配置。
 
-This split follows the [Codex configuration reference](https://developers.openai.com/codex/config-reference/) and [skills documentation](https://developers.openai.com/codex/skills/): user-level config lives in `~/.codex/config.toml`, and `$HOME/.agents/skills` is the user-scope skill directory shared by ChatGPT and Codex. The desktop app itself is not installed or driven by this repository's installer.
+此仓库不包含 `auth.json`、MCP 凭据、模型服务商密钥、历史记录、会话数据库、本机 MCP 程序路径、插件缓存或机器备份。目标设备原有的模型服务商、模型和认证信息会保留。
 
-This repository intentionally does not contain `auth.json`, MCP credentials, provider keys, history, session databases, local MCP executable paths, plugin caches, or machine backups. Provider/model selection and authentication stay on the target machine.
+## 一键安装
 
-## Install
+先在目标设备预装 Codex，然后把下面整段提示词发给具有该设备本机终端权限的 AI。AI 会自行检查环境、获取仓库、补齐缺少的命令行依赖并执行安装；你无需预先克隆仓库或手动运行安装命令，也无需先登录 Codex。
 
-Requirements: Codex CLI, Git, Node.js/npm (only when LazyCodex is missing), Bash, and Python 3.11+.
+```text
+请在这台设备上完整安装我的 Codex 配置。Codex 已经预先安装，除此之外不要假设我做过其他准备，也不要要求我预先登录。请直接使用本机终端执行，不要只给我命令或操作说明。
 
-Clone this repository, inspect `scripts/install.sh`, then run it from Bash on macOS/Linux or Git Bash/WSL on Windows:
+仓库地址：https://github.com/muwenyan521/codex-dotfiles.git
 
-```sh
-git clone https://github.com/muwenyan521/codex-dotfiles.git
-cd codex-dotfiles
-bash scripts/install.sh
+按以下顺序完成：
+1. 检查当前系统、Codex 安装方式、实际使用的 CODEX_HOME（未设置时默认为 ~/.codex），以及 TUI 和 ChatGPT 桌面版使用的用户配置目录。所有共享设置必须安装到 Codex 实际读取的位置；技能安装到 $HOME/.agents/skills。
+2. 在临时目录克隆上述仓库。先阅读仓库 AGENTS.md、README.md 和 scripts/install.sh，核实脚本行为与备份/回滚方式后再执行。
+3. 检查 bash、git、Python 3.11+、Node.js/npm 是否可用。缺少时，使用当前系统已有的包管理器或官方安装方式自动补齐，然后继续；不要让我手动下载、复制、克隆或运行命令。不要为此卸载、替换或重装已经可用的软件。
+4. 保留目标设备现有的模型服务商、模型、登录认证、MCP 凭据及其他无关配置。安装前备份将要修改的配置和文件；只在 LazyCodex OMO 尚未安装时安装它，随后安装仓库配置、提示词、智能体和技能。
+5. 验证最终 TOML 能解析，LazyCodex OMO 已启用，提示词、智能体和技能文件都在预期目录，备份可用；确认 CLI/TUI 与桌面版 Codex 都指向该共享配置。不要打印或上传任何密钥、令牌、Cookie、认证文件或个人信息。
+6. 完成后用中文报告实际改动、验证结果、备份与回滚位置，以及是否需要重启 Codex。不要提交或推送任何本机数据。
+
+如果当前 AI 没有这台设备的本机终端权限，请明确说明这一限制，不要声称已经安装。只有操作系统强制要求管理员密码、系统确认框或需要我本人点击时，才停下来指出唯一需要我完成的动作；其余步骤请自行推进。
 ```
 
-The installer detects an existing LazyCodex OMO cache and enabled config entry. If either is missing, it runs `npx --yes lazycodex-ai@4.19.4 install --no-tui`. It backs up `config.toml` before calling LazyCodex, then merges only missing TOML settings. It preserves existing provider, model, auth, and other Codex settings. Agents and the global prompt go to `CODEX_HOME`; skills go to `$HOME/.agents/skills` so both ChatGPT and Codex discover the same user skills. Backups are stored under `$CODEX_HOME/backups/codex-dotfiles-TIMESTAMP.RANDOM/` (normally `~/.codex/backups/`).
+若安装脚本因为系统策略无法自动安装依赖，AI 应说明具体缺项与原因，不得跳过验证或伪称成功。
 
-Review the merged `~/.codex/config.toml` and restart Codex TUI/Desktop. If the existing config already defines `model_instructions_file` or any of these tables, the installer deliberately leaves those existing values intact.
+## 安装器行为
 
-Rollback: restore the backed-up `config.toml`, `AGENTS.md`, prompt, agents, or `user-skills/` files from the printed backup directory. Files that did not previously exist can be removed from `CODEX_HOME` or `$HOME/.agents/skills` if you want to fully undo the installation.
+仓库中的 `scripts/install.sh` 会先备份 Codex 配置，再检测 LazyCodex OMO。发现目标设备尚未安装时，运行 `npx --yes lazycodex-ai@4.19.4 install --no-tui`；已有安装则跳过。随后只补齐缺少的配置项，并保留目标机已有设置。
 
-To use a non-default Codex home, set `CODEX_HOME` for the install command:
+Agents 和全局提示词安装到 `CODEX_HOME`；skills 安装到 `$HOME/.agents/skills`。备份保存在 `$CODEX_HOME/backups/` 下以 `codex-dotfiles-` 开头的独立目录中。安装后需重新启动 TUI 或桌面版 Codex 才能加载全局提示词和插件设置。
 
-```sh
-CODEX_HOME="$HOME/.codex-test" bash scripts/install.sh
-```
+如果已有配置定义了 `model_instructions_file` 或相同配置表，安装器会保留已有值。回滚时，从安装器打印的备份目录恢复配置、提示词、agents 或 `user-skills/` 文件；本次新增且原先不存在的文件可从对应目标目录移除。
 
-## Prompt for an AI Installer
+## 仓库内容
 
-Copy this prompt into Codex, ChatGPT, or another coding agent on the target machine:
+- `config/config.toml`：可移植的 Codex 配置、TUI 偏好和 OMO 插件注册，不指定模型服务商或默认模型。
+- `prompts/codex-global.md`：已移除个人身份标识的全局协作提示词。
+- `agents/`：13 个智能体角色配置。角色中的模型名称依赖目标设备可用的模型目录，必要时应按目标账户调整。
+- `skills/`：13 组用户级技能，安装到 ChatGPT 与 Codex 共用的目录。不包含系统自带技能和插件缓存。
+- `AGENTS.md`：全局协作与仓库操作约定。
+- `scripts/install.sh`：先备份、检测 LazyCodex，再合并配置并安装文件的脚本。无需预装 Codex CLI 命令。
 
-> Install this Codex dotfiles repository on this machine. First inspect the repository instructions and `scripts/install.sh`, explain what it will change, and check that `CODEX_HOME` is the directory used by my Codex CLI/TUI and Desktop. Preserve my existing provider, model, authentication, MCP credentials, and unrelated files. Run the installer only after confirming its backup and merge behavior. It should install LazyCodex automatically only if the Codex OMO plugin is not already installed. Do not expose credentials or print their values. After installation, validate the resulting TOML, check that the global prompt, agents, skills, and OMO plugin files are present, and tell me exactly which restart or manual step remains.
+## 自行维护
 
-## Contents
-
-- `config/config.toml`: portable Codex preferences and OMO plugin registration.
-- `prompts/codex-global.md`: global collaboration prompt with personal identifiers removed.
-- `agents/`: agent role definitions; their model fields use the configured Codex model catalog and may need adjustment on a target account with a different catalog. The main config does not force a provider/model.
-- `skills/`: user-level skills installed into `$HOME/.agents/skills`, shared by ChatGPT and Codex. System-managed skills and plugin caches are excluded.
-- `AGENTS.md`: global project/workspace instructions.
-- `scripts/install.sh`: backup-first installer shared by TUI and Desktop.
-
-## Customization
-
-Edit the files in this repository, review the diff for personal data and machine-specific paths, then rerun the installer. Existing TOML values win; edit them manually when you intentionally want to replace a target-machine setting.
+修改仓库内容后，先检查差异中是否出现个人信息、凭据或本机专属路径，再重新运行 `bash scripts/install.sh`。安装器遵循目标设备已有配置优先；如需有意替换已有设置，应先备份并明确修改目标配置。

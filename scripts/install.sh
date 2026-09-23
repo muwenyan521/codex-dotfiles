@@ -6,11 +6,6 @@ CODEX_HOME="${CODEX_HOME:-$HOME/.codex}"
 CONFIG_FILE="$CODEX_HOME/config.toml"
 TIMESTAMP="$(date +%Y%m%d-%H%M%S)"
 
-if ! command -v codex >/dev/null 2>&1; then
-  printf '%s\n' 'Codex CLI was not found. Install Codex first; this script configures an existing Codex installation.' >&2
-  exit 1
-fi
-
 if ! python3 -c 'import tomllib' >/dev/null 2>&1; then
   printf '%s\n' 'Python 3.11+ is required to merge TOML without overwriting existing settings.' >&2
   exit 1
